@@ -1,6 +1,6 @@
 <template lang="html">
   <ul class="list-container">
-    <li class="list-item" v-for="(item, index) in bookLists" :key="item.id">
+    <li class="list-item" v-for="(item, index) in bookLists" :key="item._id" @click="gotoDetailClick(item._id)">
       <div class="list-item-left">
         <img :src="item.poster"/>
       </div>
@@ -38,12 +38,6 @@ export default {
       default: () => {
         return []
       }
-    },
-    imgs: {
-      type: Array,
-      default: () => {
-        return []
-      }
     }
   },
   data () {
@@ -54,6 +48,11 @@ export default {
   },
   components: {
     Rate
+  },
+  methods: {
+    gotoDetailClick (id) {
+      console.log(id)
+    }
   }
 }
 </script>
@@ -67,8 +66,6 @@ export default {
       display: flex;
       flex-direction: row;
       flex-wrap: nowrap;
-      padding-left: 10px;
-      padding-right: 10px;
       box-sizing: border-box;
       .list-item-left {
         width: 90px;

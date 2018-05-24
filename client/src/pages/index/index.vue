@@ -1,6 +1,7 @@
 <template lang="html">
   <div class="container">
-      <BookList :bookLists="lists" :imgs="imgs"/>
+      <TopSwiper :imgs="imgs"/>
+      <BookList :bookLists="lists" />
       <p class="more" v-if="more">没有更多数据了</p>
   </div>
 </template>
@@ -9,6 +10,7 @@
 import http from '../../utils/APIService'
 import chunk from 'chunk'
 import BookList from './components/list.vue'
+import TopSwiper from './components/swiper.vue'
 import loading from '../../utils/loading'
 export default {
   name: 'index',
@@ -22,7 +24,8 @@ export default {
     }
   },
   components: {
-    BookList
+    BookList,
+    TopSwiper
   },
   created () {
     this.init()
@@ -46,7 +49,8 @@ export default {
             publisher: item.publisher,
             rate: item.rate,
             count: 0,
-            donatePerson: 'tom'
+            donatePerson: 'tom',
+            _id: item._id
           }
         })
         loading.close()
@@ -56,8 +60,15 @@ export default {
         } else if (f === true){
           wx.stopPullDownRefresh()
         }
+
         this.lists = arr
-        this.imgs = chunk(res.data.map(item => item.poster), 3)
+
+        this.imgs = chunk(res.data.slice(0,9).map(item => {
+          return {
+            src: item.poster,
+            _id: item._id
+          }
+        }), 3)
       } else {
         conosle.log(`get booklist fail`)
       }
@@ -77,6 +88,9 @@ export default {
 
 <style lang="scss" scoped>
   .container {
+    padding-left: 10px;
+    padding-right: 10px;
+    box-sizing: border-box;
     .more {
       text-align: center;
       font-size: 14px;
