@@ -1,14 +1,15 @@
 const Koa = require('koa')
 const app = new Koa()
-const views = require('koa-views')
 const json = require('koa-json')
 const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
 const path = require('path')
+require('./libs/db')
 const index = require('./routes/index')
 const users = require('./routes/users')
-
+const wx = require('./routes/wx')
+const book = require('./routes/book')
 // error handler
 onerror(app)
 
@@ -19,10 +20,6 @@ app.use(bodyparser({
 app.use(json())
 app.use(logger())
 app.use(require('koa-static')(path.join(__dirname, '/public')))
-
-app.use(views(path.join(__dirname, '/views'), {
-  extension: 'ejs'
-}))
 
 // logger
 app.use(async (ctx, next) => {
@@ -35,7 +32,8 @@ app.use(async (ctx, next) => {
 // routes
 app.use(index.routes(), index.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
-
+app.use(wx.routes(), wx.allowedMethods())
+app.use(book.routes(), book.allowedMethods())
 // error-handling
 app.on('error', (err, ctx) => {
   console.error('server error', err, ctx)
