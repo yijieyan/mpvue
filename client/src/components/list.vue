@@ -16,7 +16,7 @@
       <div class="list-item-right">
         <div class="list-item-right-top">
           <span>{{item.rate}}</span>
-          <Rate :value="item.rate/2" size="12"/>
+          <Rate :value="item.rate" size="12"/>
         </div>
         <div class="list-item-middle">
           浏览数:{{item.count}}
@@ -30,7 +30,7 @@
 </template>
 
 <script>
-  import Rate from './rate.vue'
+import Rate from './rate.vue'
 export default {
   props: {
     bookLists: {
@@ -51,7 +51,9 @@ export default {
   },
   methods: {
     gotoDetailClick (id) {
-      console.log(id)
+      wx.navigateTo({
+        url: '/pages/detail/main?id='+id
+      })
     }
   }
 }

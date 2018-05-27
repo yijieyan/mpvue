@@ -12,7 +12,8 @@ let bookSchema = new Schema({
   title: String, // 书名
   price: String, // 价格
   summary: String, // 描述
-  isbn: String // isbn编号
+  isbn: String, // isbn编号
+  tags: [] // 标签
 }, {versionKey: false, timestamps: true})
 
 module.exports = mongoose.model('book', bookSchema)

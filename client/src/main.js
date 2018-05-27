@@ -27,7 +27,7 @@ export default {
         iconPath: '/static/img/book.png',
         selectedIconPath: '/static/img/book-active.png'
       }, {
-        pagePath: 'pages/me/main',
+        pagePath: 'pages/index/main',
         text: '评论',
         iconPath: '/static/img/todo.png',
         selectedIconPath: '/static/img/todo-active.png'

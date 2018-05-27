@@ -1,6 +1,7 @@
 let router = require('koa-router')()
 let http = require('../libs/http')
 let Book = require('../models/book')
+let User = require('../models/user')
 router.prefix('/books')
 
 /**
@@ -29,7 +30,8 @@ router.post('/addBook', async (ctx, next) => {
         title: res.title,
         price: res.price,
         summary: res.summary,
-        isbn
+        isbn,
+        tags: res.tags
       })
 
       ctx.body = {code: 0, data: `add book successful`}
@@ -54,6 +56,25 @@ router.get('/getBook', async (ctx, next) => {
     ctx.body = {code: 0, data: bookLists}
   } catch (err) {
     ctx.body = {code: -1, errmsg: `get book fail,${err}`}
+  }
+})
+
+/**
+ * 获取图书的详情
+ * @type {[type]}
+ */
+router.get('/getBookDetail', async (ctx, next) => {
+  try {
+    let {id} = ctx.query
+    let bookDetail = await Book.findOne({_id: id})
+    let userInfo = await User.findOne({openId: bookDetail.openId})
+    let obj = Object.assign({}, bookDetail._doc, {
+      avatar: userInfo.avatar,
+      username: userInfo.username
+    })
+    ctx.body = {code: 0, data: obj}
+  } catch (err) {
+    ctx.body = {code: -1, errmsg: `get book detail fail`}
   }
 })
 

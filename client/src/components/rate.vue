@@ -11,7 +11,7 @@
 export default {
   props: {
     value: {
-      type: Number,
+      type: [Number, String],
       default: 0
     },
     size: {
@@ -29,14 +29,14 @@ export default {
       styleFont: `color: ${this.theme};font-size: ${this.size}px;`
     }
   },
-  mounted () {
+  updated () {
     setTimeout(() => {
         this.setStyle()
       },0)
   },
   methods: {
     setStyle () {
-      this.rateObj = `width: ${this.value}em;`
+      this.rateObj = `width: ${this.value/2}em;`
     }
   }
 }

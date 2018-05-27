@@ -2,7 +2,7 @@
   <section class="container">
     <div class="userInfo">
       <img :src="userInfo.avatar" class="avatar"/>
-      <button open-type="getUserInfo" @click.stop="getUserInfoClick" v-if="!islogin">
+      <button open-type="getUserInfo"  v-if="!islogin">
         <span class="username">{{userInfo.username}}</span>
       </button>
       <span class="username" v-else>{{userInfo.username}}</span>
@@ -51,7 +51,13 @@ export default {
                       that.islogin = true
                       that.userInfo.username = res.userInfo.nickName
                       that.userInfo.avatar = res.userInfo.avatarUrl
-
+                      let user = {
+                        openId: that.userInfo.openId,
+                        username: res.userInfo.nickName,
+                        avatar: res.userInfo.avatarUrl
+                      }
+                      wx.setStorageSync('user', JSON.stringify(user))
+              
                       await http.post('/users/addUserInfo', {
                         username: res.userInfo.nickName,
                         avatar: res.userInfo.avatarUrl,

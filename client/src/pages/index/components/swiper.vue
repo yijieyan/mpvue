@@ -34,7 +34,9 @@ export default {
   },
   methods: {
     gotoDetailClick (id) {
-      console.log(id)
+      wx.navigateTo({
+        url: '/pages/detail/main?id='+id
+      })
     }
   }
 }

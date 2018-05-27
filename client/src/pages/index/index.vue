@@ -9,7 +9,7 @@
 <script>
 import http from '../../utils/APIService'
 import chunk from 'chunk'
-import BookList from './components/list.vue'
+import BookList from '../../components/list.vue'
 import TopSwiper from './components/swiper.vue'
 import loading from '../../utils/loading'
 export default {

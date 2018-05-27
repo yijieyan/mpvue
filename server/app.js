@@ -10,6 +10,7 @@ const index = require('./routes/index')
 const users = require('./routes/users')
 const wx = require('./routes/wx')
 const book = require('./routes/book')
+const comment = require('./routes/comment')
 // error handler
 onerror(app)
 
@@ -34,6 +35,7 @@ app.use(index.routes(), index.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
 app.use(wx.routes(), wx.allowedMethods())
 app.use(book.routes(), book.allowedMethods())
+app.use(comment.routes(), comment.allowedMethods())
 // error-handling
 app.on('error', (err, ctx) => {
   console.error('server error', err, ctx)
