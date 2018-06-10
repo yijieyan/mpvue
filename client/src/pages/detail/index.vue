@@ -2,8 +2,8 @@
   <div class="container">
     <Banner :bannerData="bannerData"/>
     <Desc :descData="descData"/>
-    <div class="" v-if="openId">
-        <Comment :commentList="commentList" :openId="openId" :bookId="bookId" @init="initHanldClick"/>
+    <div class="">
+        <Comment :commentList="commentList"  :bookId="bookId" :status="true" @init="initHanldClick"/>
     </div>
   </div>
 </template>
@@ -12,7 +12,7 @@
 import http from '../../utils/APIService'
 import Banner from './components/bananer.vue'
 import Desc from './components/desc.vue'
-import Comment from './components/comment.vue'
+import Comment from '../../components/comment.vue'
 import loading from '../../utils/loading'
 export default {
   components: {
@@ -26,13 +26,28 @@ export default {
       descData: {},
       openId: '',
       bookId:'',
-      commentList:[]
+      commentList:[],
+      title: ''
     }
   },
   mounted () {
     let id = this.$root.$mp.query.id
+    this.bookId = id
     this.openId = wx.getStorageSync('user') ? JSON.parse(wx.getStorageSync('user')).openId: ''
     this.init(id)
+    this.getComment(id)
+    wx.showShareMenu({
+      withShareTicket: true
+    })
+  },
+  onShareAppMessage (res) {
+    if (res.from === 'button') {
+     console.log(res.target)
+   }
+   return {
+     title: this.title,
+     path: '/pages/detail/main?id='+ this.bookId
+   }
   },
   methods: {
     async init (id) {
@@ -42,6 +57,7 @@ export default {
         wx.setNavigationBarTitle({
           title: res.data.title
         })
+        this.title = res.data.title
         this.bookId = res.data._id
         this.bannerData = {
           poster: res.data.poster,
@@ -58,19 +74,22 @@ export default {
           tags: res.data.tags,
           summary: res.data.summary
         }
+        loading.close()
       } else {
+        loading.close()
         console.log('get book detail fail')
       }
-
+    },
+    async getComment (id) {
       // 获取评论信息
-      let ret = await http.get('/comment/getCommentList', {bookId:this.bookId})
+      let ret = await http.get('/comment/getCommentList', {bookId:id})
       if (ret.code === 0) {
         this.commentList = ret.data
       }
-      loading.close()
     },
     initHanldClick () {
-      this.init()
+      this.init(this.bookId)
+      this.getComment(this.bookId)
     }
   }
 }

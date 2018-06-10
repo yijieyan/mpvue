@@ -1,14 +1,12 @@
 <template lang="html">
   <section class="container">
     <div class="userInfo">
-      <img :src="userInfo.avatar" class="avatar"/>
-      <button open-type="getUserInfo"  v-if="!islogin">
-        <span class="username">{{userInfo.username}}</span>
-      </button>
-      <span class="username" v-else>{{userInfo.username}}</span>
+      <img :src="userInfo.avatar || '../../../static/img/unlogin.png'" class="avatar"/>
+      <span class="username">{{userInfo.username}}</span>
     </div>
     <spendTime/>
-    <button type="warn" size="default" :plain="false" @click="handleScanCode">扫码录入图书</button>
+    <button class="btn" type="warn" size="default" :plain="false" @click="handleScanCode" v-if="userInfo.openId">扫码录入图书</button>
+    <button class="btn" open-type="getUserInfo" lang="zh_CN"  @getuserinfo="login" v-else>点击登录</button>
   </section>
 </template>
 
@@ -19,10 +17,9 @@ export default {
   name: 'me',
   data() {
     return {
-      islogin: false,
       userInfo: {
-        username: '未登陆',
-        avatar: 'http://img.mukewang.com/user/59ed52ea0001ed3902000200-100-100.jpg',
+        username: '',
+        avatar: '',
         openId: ''
       }
     }
@@ -30,11 +27,22 @@ export default {
   components: {
     spendTime
   },
-  created() {
-    this.init()
+  onShow () {
+
+    let user = wx.getStorageSync('user')
+    if (user) {
+      user = JSON.parse(user);
+    } else {
+      this.userInfo.username = ''
+      this.userInfo.avatar = ''
+      this.userInfo.openId = ''
+    }
+    this.userInfo.username = user.username
+    this.userInfo.avatar = user.avatar
+    this.userInfo.openId = user.openId
   },
   methods: {
-    init() {
+    login() {
       let that = this
       wx.login({
         success: async function(res) {
@@ -48,7 +56,7 @@ export default {
                   // 已经授权，可以直接调用 getUserInfo 获取头像昵称
                   wx.getUserInfo({
                     success: async function(res) {
-                      that.islogin = true
+
                       that.userInfo.username = res.userInfo.nickName
                       that.userInfo.avatar = res.userInfo.avatarUrl
                       let user = {
@@ -57,7 +65,7 @@ export default {
                         avatar: res.userInfo.avatarUrl
                       }
                       wx.setStorageSync('user', JSON.stringify(user))
-              
+
                       await http.post('/users/addUserInfo', {
                         username: res.userInfo.nickName,
                         avatar: res.userInfo.avatarUrl,
@@ -82,9 +90,7 @@ export default {
     handleScanCode() {
       wx.scanCode({
         success: (res) => {
-          console.log(res)
-          this.addBooksByIsbn(9787550026209)
-
+          this.addBooksByIsbn(res.result)
         }
       })
     },
@@ -134,6 +140,11 @@ export default {
             margin: 20px auto;
             font-size: 24px;
         }
+    }
+    .btn {
+      background: #ea5a49;
+      color: #fff;
+      margin-top: 10px;
     }
 }
 </style>

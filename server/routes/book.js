@@ -16,6 +16,7 @@ router.post('/addBook', async (ctx, next) => {
       let options = {
         uri: `https://api.douban.com/v2/book/isbn/${isbn}`
       }
+
       let res = await http(options)
       let author = res.author.join(',')
 
@@ -35,9 +36,9 @@ router.post('/addBook', async (ctx, next) => {
       })
 
       ctx.body = {code: 0, data: `add book successful`}
-      return
+    } else {
+      ctx.body = {code: -1, errmsg: `this book is exist`}
     }
-    ctx.body = {code: -1, errmsg: `this book is exist`}
   } catch (err) {
     ctx.body = {
       code: -1, errmsg: `addBook fail`
@@ -66,7 +67,9 @@ router.get('/getBook', async (ctx, next) => {
 router.get('/getBookDetail', async (ctx, next) => {
   try {
     let {id} = ctx.query
+    console.log('11111:', id)
     let bookDetail = await Book.findOne({_id: id})
+    await bookDetail.save({count: bookDetail.count++})
     let userInfo = await User.findOne({openId: bookDetail.openId})
     let obj = Object.assign({}, bookDetail._doc, {
       avatar: userInfo.avatar,
@@ -75,6 +78,20 @@ router.get('/getBookDetail', async (ctx, next) => {
     ctx.body = {code: 0, data: obj}
   } catch (err) {
     ctx.body = {code: -1, errmsg: `get book detail fail`}
+  }
+})
+
+/**
+ * 通过openId 获取图书列表
+ * @type {[type]}
+ */
+router.get('/getBookListByOpenId', async (ctx, next) => {
+  try {
+    let {openId} = ctx.query
+    let bookLists = await Book.find({openId}).select('-createdAt -updatedAt')
+    ctx.body = {code: 0, data: bookLists}
+  } catch (err) {
+    ctx.body = {code: -1, errmsg: `get bookList fail`}
   }
 })
 

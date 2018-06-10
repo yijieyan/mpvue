@@ -64,6 +64,8 @@ export default {
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
+    width: 100%;
+    overflow: hidden;
     .list-item {
       display: flex;
       flex-direction: row;

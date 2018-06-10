@@ -44,7 +44,7 @@ export default {
       return Math.floor(spendDays/fullDays* 100)
     },
     days () {
-      return `${new Date().getFullYear()} 年已经过去了${this.spendDays()}天`
+      return `${new Date().getFullYear()} 年已经过去了${parseInt(this.spendDays())}天`
     }
   }
 }

@@ -13,7 +13,11 @@ let bookSchema = new Schema({
   price: String, // 价格
   summary: String, // 描述
   isbn: String, // isbn编号
-  tags: [] // 标签
+  tags: [], // 标签
+  count: {
+    type: Number,
+    default: 0
+  }
 }, {versionKey: false, timestamps: true})
 
 module.exports = mongoose.model('book', bookSchema)

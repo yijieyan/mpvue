@@ -29,10 +29,15 @@ export default {
       styleFont: `color: ${this.theme};font-size: ${this.size}px;`
     }
   },
-  updated () {
-    setTimeout(() => {
-        this.setStyle()
-      },0)
+  // updated () {
+  //   setTimeout(() => {
+  //       this.setStyle()
+  //     },0)
+  // },
+  computed: {
+    stars () {
+      this.rateObj = `width: ${this.value/2}em;`
+    }
   },
   methods: {
     setStyle () {

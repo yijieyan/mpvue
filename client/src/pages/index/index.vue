@@ -2,7 +2,7 @@
   <div class="container">
       <TopSwiper :imgs="imgs"/>
       <BookList :bookLists="lists" />
-      <p class="more" v-if="more">没有更多数据了</p>
+      <p class="more" v-if="more" >没有更多数据了</p>
   </div>
 </template>
 
@@ -30,6 +30,10 @@ export default {
   created () {
     this.init()
   },
+  onShow () {
+    this.page = 1
+    this.init()
+  },
   methods: {
     async init (f) {
 
@@ -37,10 +41,9 @@ export default {
       loading.open()
       let res = await http.get('/books/getBook', {page: this.page, count: this.count})
       if (res.code === 0) {
-        if (res.data.length < 10 && this.page > 0) {
+        if (res.data.length < 10 && this.page > 0 && this.lists.length > 10) {
           this.more = true
         }
-
         let arr = res.data.map(item => {
           return {
             poster: item.poster,
@@ -48,7 +51,7 @@ export default {
             author: item.author,
             publisher: item.publisher,
             rate: item.rate,
-            count: 0,
+            count: item.count,
             donatePerson: 'tom',
             _id: item._id
           }

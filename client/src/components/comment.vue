@@ -1,34 +1,33 @@
 <template lang="html">
   <div class="comment-container">
-    <p>评论:</p>
-    <div class="addComment" v-if="!commentList.length">
+    <div class="addComment" v-if="isShowComment">
+      <p>评论:</p>
       <textarea   placeholder="请输入你的评论"
                 v-model="comment" maxlength="200" class="textarea"/>
-
       <div class="device">
           <span>获取手机型号:</span>
           <switch @change="getPhoneType" color="#ea5a49" :checked="phoneChecked"/>
           <span v-show="phoneChecked">{{phone}}</span>
       </div>
-
       <div class="device">
           <span>获取地理位置:</span>
           <switch @change="getLocation" color="#ea5a49" :checked="locationChecked"/>
           <span v-show="locationChecked">{{location}}</span>
       </div>
-
-      <button type="default" class="btn" @click="addComment">提交</button>
+      <button type="default" class="btn" @click="addComment">评论</button>
     </div>
 
-    <ul class="commentList">
-      <li v-for="(item, index) in commentList" :key="item._id">
+    <ul class="commentList" v-if="commentList.length">
+      <p class="title">评论:</p>
+      <li v-for="(item, index) in commentList" :key="item._id" class="item" @click="goToDetail(item.bookId)">
         <h3>
           <img :src="item.userInfo.avatar"/>
-          <span>{{item.userInfo.username}}</span>
+          <span class="username">{{item.userInfo.username}}</span>
+          <p>{{item.content}}</p>
         </h3>
-        <p>{{item.content}}</p>
+
         <div class="phoneInfo">
-          <span>{{item.phone}}</span>
+          <span>{{item.phone}} -- </span>
           <span>{{item.location}}</span>
         </div>
       </li>
@@ -37,7 +36,7 @@
 </template>
 
 <script>
-import http from '../../../utils/APIService'
+import http from '../utils/APIService'
 
 export default {
   props: {
@@ -51,9 +50,9 @@ export default {
         return []
       }
     },
-    openId: {
-      type: String,
-      default: ''
+    status: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -62,10 +61,26 @@ export default {
       phoneChecked: false,
       locationChecked: false,
       phone: '未知型号',
-      location: '未知地点'
+      location: '未知地点',
+      openId: ''
+    }
+  },
+  computed: {
+    isShowComment () {
+      let openId = wx.getStorageSync('user') ? JSON.parse(wx.getStorageSync('user')).openId: ''
+      this.openId = openId
+      let flag = this.commentList.filter(item => item.openId === openId).length
+      if (openId && !flag && this.status) {
+        return true
+      } else {
+        return false
+      }
     }
   },
   methods: {
+    goToDetail (bookId) {
+      this.$emit('goToDetail', bookId)
+    },
     getPhoneType (e) {
       this.phoneChecked = e.target.value
       let obj = wx.getSystemInfoSync()
@@ -98,13 +113,13 @@ export default {
         openId: this.openId,
         bookId: this.bookId
       })
-      this.comment = ''
-      this.phone = '未知型号'
-      this.location = '未知地点'
-      this.phoneChecked = false
-      this.locationChecked = false
       if (res.code === 0) {
         this.$emit('init')
+        this.comment = ''
+        this.phone = '未知型号'
+        this.location = '未知地点'
+        this.phoneChecked = false
+        this.locationChecked = false
       }
     }
   }
@@ -145,39 +160,49 @@ export default {
       display: flex;
       flex-direction: column;
       flex-wrap: nowrap;
-      margin-left: 10px;
       margin-top: 10px;
-      h3 {
-        height: 80rpx;
-        >img {
-          width: 60rpx;
-          height: 60rpx;
-          border-radius: 50%;
-          vertical-align: middle;
-          margin-right: 10px;
-        }
-        span {
-          font-size: 20px;
-          color: #000;
-        }
-      }
-      p {
-        text-indent: 2em;
-        font-size: 16px;
+      background: #eee;
+      .title {
+        padding-top:10px;
+        padding-left: 20rpx;
+        box-sizing: border-box;
         color: #000;
-        background: #eee;
-        margin-left: -10px;
-        padding: 10px;
-        box-sizing: border-box;
+        font-size: 14px;
       }
-      .phoneInfo {
-        padding: 10px;
+      .item {
+        margin-top: 10px;
+        position: relative;
         box-sizing: border-box;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: space-between;
-        font-size: 12px;
+        background: #fff;
+        h3 {
+          >img {
+            width: 60rpx;
+            height: 60rpx;
+            border-radius: 50%;
+            vertical-align: middle;
+            margin-right: 10px;
+            margin-top: 10rpx;
+            margin-left: 10px;
+          }
+          span {
+            font-size: 12px;
+            color: #000;
+          }
+          p {
+            text-indent: 2em;
+            font-size: 14px;
+            color: #000;
+            margin-top: 10rpx;
+            margin-bottom: 10rpx;
+          }
+        }
+
+        .phoneInfo {
+          position: absolute;
+          top: 10rpx;
+          right: 20rpx;
+          font-size: 12px;
+        }
       }
     }
   }
