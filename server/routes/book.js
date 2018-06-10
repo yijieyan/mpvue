@@ -54,6 +54,11 @@ router.get('/getBook', async (ctx, next) => {
   try {
     let {page = 1, count = 10} = ctx.query
     let bookLists = await Book.find({}).select('-createdAt -updatedAt').skip(((+page - 1) * (+count))).limit(+count)
+    for (let i = 0; i < bookLists.length; i++) {
+      let item = bookLists[i]
+      let userInfo = await User.findOne({openId: item.openId})
+      bookLists[i]._doc.username = userInfo.username
+    }
     ctx.body = {code: 0, data: bookLists}
   } catch (err) {
     ctx.body = {code: -1, errmsg: `get book fail,${err}`}
