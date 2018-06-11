@@ -52,7 +52,7 @@ export default {
             publisher: item.publisher,
             rate: item.rate,
             count: item.count,
-            donatePerson: 'tom',
+            donatePerson: item.username,
             _id: item._id
           }
         })
